@@ -32,15 +32,16 @@ const adminLogin =async (req,res)=>{
             if(admin.password===password){
             console.log("Logged in successfully");
             const token = jwt.sign({ sub: admin._id }, 'Key', { expiresIn: '3d' })
-            res.json({ admin: true, token })
+            res.json({ admin:true, token })
             }else{
              console.log("Invalid Password")
-             const error= { username: 'Invalid password' }
-             res.json({admin:false,error})
+             const errors= { username: 'Invalid password' }
+             res.json({errors,admin:false})
             }
         }else{
             console.log("Username not found")
-            res.json({admin:false,error})
+            const errors = {username:'Username not found'}
+            res.json({errors,admin:false})
         }
 
     } catch (error) {
@@ -49,4 +50,60 @@ const adminLogin =async (req,res)=>{
 }
 
 
-module.exports= {adminLogin}
+const userList = async (req,res)=>{
+    console.log("hello iam user data .......-------")
+    const data=await userCollection.find({})
+    console.log(data,"user data  ahsddgd")
+    if(data){
+        res.json({data})
+    }else{
+        return res.status(404).json({ message: "Users are  not found" })
+    }
+}
+
+
+// ///BLOCKING USER BY ADMIN  
+// const blockUser=async (req,res)=>{
+//  try{
+//     const userData = await userCollection.findOne({_id:req.params.id})
+//     if(userData){
+//        const data=await userCollection.updateOne({_id:userData.id},{$set:{status:true}})
+//        if(data){
+//         res.json({data})
+//     }else{
+//         return res.status(404).json({ message: "Users are  not found" })
+//     }
+//     }
+//  }catch(error){
+//     console.log(error)
+//  }
+// }
+
+// Assuming you have imported the necessary dependencies and established a connection to the database
+
+const blockUser = async (req, res) => {
+    try {
+      const userData = await userCollection.findOne({ _id: req.params.id });
+      if (userData) {
+        const data = await userCollection.updateOne(
+          { _id: userData._id },
+          { $set: { status: true } }
+        );
+        if (data.modifiedCount > 0) {
+          return res.json({ data, message: "User blocked successfully" });
+        } else {
+          return res.status(404).json({ message: "User not found" });
+        }
+      } else {
+        return res.status(404).json({ message: "User not found" });
+      }
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  };
+  
+
+  
+
+module.exports= {adminLogin ,userList ,blockUser}
