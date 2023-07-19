@@ -6,7 +6,7 @@ const partnerSchema = new mongoose.Schema({
       turfname:{type:String,required:true},
       username: {type:String,require: true},
       password :{type:String,required:true},
-      status:{type:Boolean,default:true}
+      isApprove:{type:Boolean,default:false}
 })
 
 module.exports = mongoose.model ('partners', partnerSchema)

@@ -10,4 +10,6 @@ partnerRouter.get('/partner', function(req, res) {
 partnerRouter.post('/partnersignup',partnerController.partnerSignup)
 partnerRouter.post('/partnerlogin',partnerController.partnerLogin)
 
+
+
 module.exports = partnerRouter;

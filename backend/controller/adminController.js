@@ -1,5 +1,6 @@
 const adminCollection= require('../model/adminModel')
 const userCollection= require('../model/userModel')
+const partnerCollection = require('../model/partnerModel')
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt')
 
@@ -61,6 +62,17 @@ const userList = async (req,res)=>{
     }
 }
 
+const partnerList = async (req,res)=>{
+  console.log("hello iam user data .......-------")
+  const data=await partnerCollection.find({})
+  console.log(data,"user data  ahsddgd")
+  if(data){
+      res.json({data})
+  }else{
+      return res.status(404).json({ message: "Users are  not found" })
+  }
+}
+
 
 // ///BLOCKING USER BY ADMIN  
 // const blockUser=async (req,res)=>{
@@ -79,15 +91,43 @@ const userList = async (req,res)=>{
 //  }
 // }
 
-// Assuming you have imported the necessary dependencies and established a connection to the database
+
 
 const blockUser = async (req, res) => {
     try {
-      const userData = await userCollection.findOne({ _id: req.params.id });
+      console.log("hello ia block user -----------ddfdfdd")
+      const {userId}=req.body
+      const userData = await userCollection.findOne({ _id: userId});
+      console.log(userData,"hello ia block user -----------ddfdfdd")
       if (userData) {
         const data = await userCollection.updateOne(
           { _id: userData._id },
-          { $set: { status: true } }
+          { $set: { isBlock: true } }
+        );
+        if (data.modifiedCount > 0) {
+          return res.json({ data, message: "User blocked successfully" });
+        } else {
+          return res.status(404).json({ message: "User not found" });
+        }
+      } else {
+        return res.status(404).json({ message: "User not found" });
+      }
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  };
+  
+  const UnBlockUser = async (req, res) => {
+    try {
+      console.log("hello ia unblock user -----------ddfdfdd")
+      const {userId}=req.body
+      const userData = await userCollection.findOne({ _id: userId});
+      console.log(userData,"hello ia unblock user -----------ddfdfdd")
+      if (userData) {
+        const data = await userCollection.updateOne(
+          { _id: userData._id },
+          { $set: { isBlock: false } }
         );
         if (data.modifiedCount > 0) {
           return res.json({ data, message: "User blocked successfully" });
@@ -104,6 +144,4 @@ const blockUser = async (req, res) => {
   };
   
 
-  
-
-module.exports= {adminLogin ,userList ,blockUser}
+module.exports= {adminLogin ,userList ,blockUser,UnBlockUser,partnerList}
